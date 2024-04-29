@@ -1,10 +1,7 @@
 
 """
-Created on Sun Apr 28 16:16:07 2024
-
 @author: andrewhashoush
 """
-
 import pandas as pd
 import sklearn.model_selection
 import matplotlib.pyplot as plt
@@ -15,7 +12,6 @@ df_test = pd.read_csv('/Users/andrewhashoush/Downloads/spaceship-titanic/test.cs
 print(df.head())
 
 print(df.info())
-
 
 # Most of the passengers were between 17-32 years old
 plt.figure()
@@ -51,3 +47,29 @@ plt.title('Frequency of Passengers by Deck')
 plt.xlabel('Deck')
 plt.ylabel('Number of Passengers')
 plt.show()
+
+#changing missing values to Mode
+categorical_columns = ['HomePlanet', 'CryoSleep','Destination', 'VIP']
+for column in categorical_columns:
+    mode_value = df[column].mode()[0]
+    df[column] = df[column].fillna(mode_value)
+    df_test[column] = df_test[column].fillna(mode_value)
+    #Checking if It worked
+    print(f"Missing values in {column}: {df[column].isnull().sum()}")
+    
+#changing missing values to 0 since it means they didn't spend any extra money
+spending_columns = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
+for column in spending_columns:
+    df[column] = df[column].fillna(0)
+    df_test[column] = df_test[column].fillna(0)
+
+#Changing missing value to Age
+median_age = df['Age'].median()
+df['Age'] = df['Age'].fillna(median_age)
+df_test['Age']= df_test['Age'].fillna(median_age)
+print(f"Age Values Missing: {df['Age'].isnull().sum()}")
+
+#Changing Dummy Variables to 0 or 1
+df = pd.get_dummies(df, columns=['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'Deck', 'Side'])
+df_test = pd.get_dummies(df_test, columns=['HomePlanet', 'CryoSleep','Destination', 'VIP', 'Deck', 'Side'])
+
