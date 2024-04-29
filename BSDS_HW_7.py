@@ -73,3 +73,37 @@ print(f"Age Values Missing: {df['Age'].isnull().sum()}")
 df = pd.get_dummies(df, columns=['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'Deck', 'Side'])
 df_test = pd.get_dummies(df_test, columns=['HomePlanet', 'CryoSleep','Destination', 'VIP', 'Deck', 'Side'])
 
+#Split Data
+df_train, df_val = sklearn.model_selection.train_test_split(df, train_size =.8, random_state= 123)
+X_train, y_train = df_train.drop('Transported', axis=1), df_train['Transported']
+X_val, y_val = df_val.drop('Transported', axis=1), df_val['Transported']
+
+#I'm Dropping Name as this varibale does not affect the data
+X_train = X_train.drop('Name', axis=1)
+X_val = X_val.drop('Name', axis=1)
+
+#Decision Tree Classifier
+dt_model = DecisionTreeClassifier(random_state=123)
+dt_model.fit(X_train, y_train)
+dt_val_pred = dt_model.predict(X_val)
+dt_accuracy = accuracy_score(y_val, dt_val_pred)
+print(f"Decision Tree Accuracy: {dt_accuracy}")
+
+# Random Forest Classifier
+rf_model = RandomForestClassifier(n_estimators=300,random_state=123)
+rf_model.fit(X_train, y_train)
+rf_val_pred = rf_model.predict(X_val)
+rf_accuracy = accuracy_score(y_val, rf_val_pred)
+print(f"Random Forest Accuracy: {rf_accuracy}")
+
+# Gradient Boosting Classifier
+gb_model = GradientBoostingClassifier(n_estimators=150, learning_rate=0.1,random_state=123)
+gb_model.fit(X_train, y_train)
+gb_val_pred = gb_model.predict(X_val)
+gb_accuracy = accuracy_score(y_val, gb_val_pred)
+print(f"Gradient Boosting Accuracy: {gb_accuracy}")
+
+#The best classifer seems to be Random Forest with 0.819, however Gradient Boosting gives a little higher score om Kaggle
+final_pred = gb_model.predict(df_test.drop('Name', axis=1)) 
+submission_df = pd.DataFrame({ 'PassengerId': df_test['PassengerId'], 'Transported': final_pred})
+submission_df.to_csv('/Users/andrewhashoush/Downloads/spaceship-titanic/sample_submission.csv', index=False)
