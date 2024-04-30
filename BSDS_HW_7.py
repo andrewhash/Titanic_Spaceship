@@ -3,8 +3,12 @@
 @author: andrewhashoush
 """
 import pandas as pd
+import numpy as np
 import sklearn.model_selection
 import matplotlib.pyplot as plt
+import sklearn as sk
+import sklearn.tree
+import sklearn.ensemble
 
 df = pd.read_csv('/Users/andrewhashoush/Downloads/spaceship-titanic/train.csv')
 df_test = pd.read_csv('/Users/andrewhashoush/Downloads/spaceship-titanic/test.csv')
@@ -83,25 +87,25 @@ X_train = X_train.drop('Name', axis=1)
 X_val = X_val.drop('Name', axis=1)
 
 #Decision Tree Classifier
-dt_model = DecisionTreeClassifier(random_state=123)
+dt_model = sk.tree.DecisionTreeClassifier(max_depth = 5,random_state=123)
 dt_model.fit(X_train, y_train)
-dt_val_pred = dt_model.predict(X_val)
-dt_accuracy = accuracy_score(y_val, dt_val_pred)
-print(f"Decision Tree Accuracy: {dt_accuracy}")
+dt_val_pred = dt_model.predict(X_val).astype('float')
+dt_Score = np.mean(dt_val_pred  == y_val)
+print(f"Decision Tree : {dt_Score}")
 
 # Random Forest Classifier
-rf_model = RandomForestClassifier(n_estimators=300,random_state=123)
+rf_model = sk.ensemble.RandomForestClassifier(n_estimators=300,random_state=123)
 rf_model.fit(X_train, y_train)
 rf_val_pred = rf_model.predict(X_val)
-rf_accuracy = accuracy_score(y_val, rf_val_pred)
-print(f"Random Forest Accuracy: {rf_accuracy}")
+rf_Score = np.mean(rf_val_pred  == y_val)
+print(f"Random Forest: {rf_Score}")
 
 # Gradient Boosting Classifier
-gb_model = GradientBoostingClassifier(n_estimators=150, learning_rate=0.1,random_state=123)
+gb_model = sk.ensemble.GradientBoostingClassifier(n_estimators=150, learning_rate=0.1,random_state=123)
 gb_model.fit(X_train, y_train)
 gb_val_pred = gb_model.predict(X_val)
-gb_accuracy = accuracy_score(y_val, gb_val_pred)
-print(f"Gradient Boosting Accuracy: {gb_accuracy}")
+gb_Score = np.mean(gb_val_pred  == y_val)
+print(f"Gradient Boosting Score: {gb_Score}")
 
 #The best classifer seems to be Random Forest with 0.819, however Gradient Boosting gives a little higher score om Kaggle
 final_pred = gb_model.predict(df_test.drop('Name', axis=1)) 
