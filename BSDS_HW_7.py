@@ -63,7 +63,7 @@ for column in spending_columns:
     df[column] = df[column].fillna(0)
     df_test[column] = df_test[column].fillna(0)
 
-#Changing missing value to Age
+#Changing missing value to Median for Age
 median_age = df['Age'].median()
 df['Age'] = df['Age'].fillna(median_age)
 df_test['Age']= df_test['Age'].fillna(median_age)
